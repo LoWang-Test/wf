@@ -12,7 +12,7 @@ if (!Directory.Exists(output))
 for (int i = 1; i <= 1500; i++)
 {
     var packageBuilder = new PackageBuilder();
-    packageBuilder.Title = packageBuilder.Id = $"LimitTester.Package{i}";
+    packageBuilder.Title = packageBuilder.Id = $"LimitTester.Package{i:0000}";
     packageBuilder.Authors.Add("Lo_Wang");
     packageBuilder.Version = new NuGet.Versioning.NuGetVersion(1, 0, 0);
     packageBuilder.Description = "Package description";

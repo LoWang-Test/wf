@@ -1,18 +1,21 @@
 param($key)
 
 function Upload($package) {
-    dotnet nuget push $package --api-key $key --source https://api.nuget.org/v3/index.json
+    (dotnet nuget push $package --api-key $key --source https://api.nuget.org/v3/index.json) | Tee-Object -Variable output | Out-Null
+    $output = ""
+    #(& bash ./dump.sh $package $key) | Tee-Object -Variable output | Out-Null
+    Write-Host $output
     if ($LASTEXITCODE -ne 0) {
         return $false;
     }
     return $true;
 }
 
-$packages = Get-ChildItem ./src/bin/Debug/net8.0/packages
+$packages = Get-ChildItem ./packages
 
 $counter = 0
 foreach ($package in $packages) {
-    $result = Upload -package $packages.FullName
+    $result = Upload -package $package.FullName
     if ($result) {
         $counter++
     } else {

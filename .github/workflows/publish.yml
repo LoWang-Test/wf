@@ -20,7 +20,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: run
-        run: dotnet run ./src/PackageGenerator.csproj
+        run: dotnet run --project ./src/PackageGenerator.csproj
 
       - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
