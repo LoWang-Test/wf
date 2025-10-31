@@ -28,6 +28,10 @@ jobs:
         with:
           user: Lo_Wang
       
+      - name: check
+        shell: pwsh
+        run: Get-ChildItem
+      
       - name: NuGet push
-        shell: powershell
+        shell: pwsh
         run: ./upload.ps1 -key ${{steps.login.outputs.NUGET_API_KEY}}
