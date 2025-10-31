@@ -1,0 +1,17 @@
+name: unlist
+on:
+  workflow_dispatch:
+
+jobs:
+  unlist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: Lo_Wang
+
+      - name: Unlist packages
+        shell: pwsh
+        run: pwsh ./unlist.ps1 ${{steps.login.outputs.NUGET_API_KEY}}
