@@ -1,0 +1,33 @@
+name: publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+
+      - name: dotnet-install
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: run
+        run: dotnet run ./src/PackageGenerator.csproj
+
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: Lo_Wang
+      
+      - name: NuGet push
+        shell: powershell
+        run: ./upload.ps1 -key ${{steps.login.outputs.NUGET_API_KEY}}
