@@ -65,7 +65,11 @@ public class Uploader
             {
                 Console.WriteLine("Rate limit exceeded. Waiting for 65 minutes before retrying...");
                 Console.WriteLine(ex);
-                await Task.Delay(TimeSpan.FromMinutes(65), cancellationToken);
+                var secondsToWait = nugetLogger.WaitSeconds.HasValue
+                    ? nugetLogger.WaitSeconds.Value + 300
+                    : 3900;
+                Console.WriteLine("Waiting for {0} seconds...", secondsToWait);
+                await Task.Delay(TimeSpan.FromSeconds(secondsToWait), cancellationToken);
                 Console.WriteLine("Retrying upload of package: {0}", Path.GetFileName(packageFile));
                 key = await _login.GetTokenAsync(cancellationToken);
                 await UploadPackageAsync(packageFile, uploadResource, cancellationToken);
