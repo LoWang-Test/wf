@@ -61,7 +61,7 @@ public class Uploader
         }
         catch (HttpRequestException ex)
         {
-            if (ex.StatusCode == HttpStatusCode.TooManyRequests)
+            if (ex.StatusCode == HttpStatusCode.Forbidden)
             {
                 Console.WriteLine("Rate limit exceeded. Waiting for 65 minutes before retrying...");
                 Console.WriteLine(ex);
@@ -75,6 +75,7 @@ public class Uploader
                 Console.WriteLine("Error uploading package: {0}", Path.GetFileNameWithoutExtension(packageFile));
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.HttpRequestError);
+                throw;
             }
         }
     }
