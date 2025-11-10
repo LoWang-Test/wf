@@ -34,7 +34,7 @@ public class Login
         message.Content = JsonContent.Create(keyRequest);
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Value);
         message.Headers.UserAgent.Clear();
-        message.Headers.UserAgent.Add(new ProductInfoHeaderValue("nuget/login-action"));
+        message.Headers.UserAgent.Add(new ProductInfoHeaderValue("nuget", "login-action"));
 
         response = await _httpClient.SendAsync(message, cancellationToken);
         response.EnsureSuccessStatusCode();
