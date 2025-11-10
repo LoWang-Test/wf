@@ -8,13 +8,14 @@ namespace PackageGenerator;
 
 public class Uploader
 {
-    private static readonly Regex packageRegex = new(@"(.+)\.(\d{2}\.\d\.\d{1,2})", RegexOptions.Compiled);
+    private static readonly Regex packageRegex = new(@"(.+)\.(\d+\.\d+\.\d+)", RegexOptions.Compiled);
     private readonly NuGetLogger nugetLogger = new();
     private readonly Login _login = new();
     private string? key;
 
     public async Task UploadAsync(IReadOnlyList<string> packageFiles, CancellationToken cancellationToken)
     {
+        packageFiles = packageFiles.OrderBy(p => p).ToArray();
         Console.WriteLine("Starting upload of {0} packages...", packageFiles.Count);
         var repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
         var searchResource = await repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
