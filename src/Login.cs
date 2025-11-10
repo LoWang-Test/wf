@@ -12,6 +12,7 @@ public class Login
 
     public async Task<string> GetTokenAsync(CancellationToken cancellationToken)
     {
+        Console.WriteLine("Requesting OIDC token...");
         var requestToken = Environment.GetEnvironmentVariable("ACTIONS_ID_TOKEN_REQUEST_TOKEN");
         ArgumentException.ThrowIfNullOrEmpty(requestToken);
         var requestUrl = Environment.GetEnvironmentVariable("ACTIONS_ID_TOKEN_REQUEST_URL");
@@ -22,6 +23,7 @@ public class Login
         var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken);
+        Console.WriteLine("OIDC token acquired.");
 
         var keyRequest = new ApiKeyRequest
         {
@@ -31,12 +33,12 @@ public class Login
         var message = new HttpRequestMessage(HttpMethod.Post, TokenUrl);
         message.Content = JsonContent.Create(keyRequest);
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Value);
-        message.Headers.Add("Content-Type", "application/json");
         message.Headers.UserAgent.Clear();
         message.Headers.UserAgent.Add(new ProductInfoHeaderValue("nuget/login-action"));
 
         response = await _httpClient.SendAsync(message, cancellationToken);
         response.EnsureSuccessStatusCode();
+        Console.WriteLine("API key acquired.");
 
         return (await response.Content.ReadFromJsonAsync<ApiKeyResponse>()).ApiKey;
     }

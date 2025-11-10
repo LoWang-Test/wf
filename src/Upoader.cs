@@ -15,6 +15,7 @@ public class Uploader
 
     public async Task UploadAsync(IReadOnlyList<string> packageFiles, CancellationToken cancellationToken)
     {
+        Console.WriteLine("Starting upload of {0} packages...", packageFiles.Count);
         var repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
         var searchResource = await repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
         var uploadResource = await repository.GetResourceAsync<PackageUpdateResource>(cancellationToken);
@@ -25,7 +26,7 @@ public class Uploader
             var match = packageRegex.Match(Path.GetFileNameWithoutExtension(packageFile));
             if (!match.Success)
             {
-                Console.WriteLine("Filename {file} is not recognized as package", packageFile);
+                Console.WriteLine("Filename {0} is not recognized as package", packageFile);
                 continue;
             }
             var packageId = match.Groups[1].Value;
@@ -55,18 +56,22 @@ public class Uploader
                 true,
                 nugetLogger
             );
+            Console.WriteLine("Uploaded package: {0}", Path.GetFileName(packageFile));
         }
         catch (HttpRequestException ex)
         {
             if (ex.StatusCode == HttpStatusCode.TooManyRequests)
             {
+                Console.WriteLine("Rate limit exceeded. Waiting for 65 minutes before retrying...");
+                Console.WriteLine(ex);
                 await Task.Delay(TimeSpan.FromMinutes(65), cancellationToken);
+                Console.WriteLine("Retrying upload of package: {0}", Path.GetFileName(packageFile));
                 key = await _login.GetTokenAsync(cancellationToken);
                 await UploadPackageAsync(packageFile, uploadResource, cancellationToken);
             }
             else
             {
-                Console.WriteLine("Error uploading package: {packageName}", Path.GetFileNameWithoutExtension(packageFile));
+                Console.WriteLine("Error uploading package: {0}", Path.GetFileNameWithoutExtension(packageFile));
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.HttpRequestError);
             }
