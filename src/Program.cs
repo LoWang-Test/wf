@@ -2,6 +2,7 @@
 
 using NuGet.Packaging;
 using NuGet.Packaging.Licenses;
+using PackageGenerator;
 
 Console.WriteLine("Hello, World!");
 
@@ -9,12 +10,12 @@ var output = "./packages";
 if (!Directory.Exists(output)) 
     Directory.CreateDirectory(output);
 
-for (int i = 1; i <= 1500; i++)
+for (int i = 1; i <= 1100; i++)
 {
     var packageBuilder = new PackageBuilder();
     packageBuilder.Title = packageBuilder.Id = $"LimitTester.Package{i:0000}";
     packageBuilder.Authors.Add("Lo_Wang");
-    packageBuilder.Version = new NuGet.Versioning.NuGetVersion(1, 0, 0);
+    packageBuilder.Version = new NuGet.Versioning.NuGetVersion(1, 0, 1);
     packageBuilder.Description = "Package description";
     packageBuilder.EmitRequireLicenseAcceptance = false;
     packageBuilder.LicenseMetadata = new LicenseMetadata(LicenseType.Expression, "MIT", NuGetLicenseExpression.Parse("MIT"), [], new Version(1, 0, 0));
@@ -29,3 +30,5 @@ for (int i = 1; i <= 1500; i++)
     using var fs = new FileStream(fileName, FileMode.Create);
     packageBuilder.Save(fs);
 }
+
+await new Uploader().UploadAsync(Directory.GetFiles(output, "*.nupkg"), CancellationToken.None);

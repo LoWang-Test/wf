@@ -19,19 +19,19 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      # - name: NuGet login (OIDC → temp API key)
+      #   uses: NuGet/login@v1
+      #   id: login
+      #   with:
+      #     user: Lo_Wang
+
       - name: run
         run: dotnet run --project ./src/PackageGenerator.csproj
-
-      - name: NuGet login (OIDC → temp API key)
-        uses: NuGet/login@v1
-        id: login
-        with:
-          user: Lo_Wang
       
-      - name: check
-        shell: pwsh
-        run: Get-ChildItem
+      # - name: check
+      #   shell: pwsh
+      #   run: Get-ChildItem
       
-      - name: NuGet push
-        shell: pwsh
-        run: ./upload.ps1 -key ${{steps.login.outputs.NUGET_API_KEY}}
+      # - name: NuGet push
+      #   shell: pwsh
+      #   run: ./upload.ps1 -key ${{steps.login.outputs.NUGET_API_KEY}}
